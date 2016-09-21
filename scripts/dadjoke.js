@@ -27,16 +27,31 @@ module.exports = function(bot) {
     "He was a good conductor."
   ];
 
-  bot.hear((/dadjoke/i || /dad joke/i), function(res) {
+  bot.hear(/dad\s?joke/i, function(res) {
     var rand = getRandomIntInclusive(1, jokes.length - 1);
-
     res.send(jokes[rand]);
-
-    setTimeout(function() {
-      return res.send(answers[rand]);
-    }, 10000);
+    res.finish();
+    jokeAnswer(res.envelope.user, answers[rand], res.message.id);
   });
 
+  function jokeAnswer(user, answer, messageID) {
+    bot.listen(
+      function(message) {
+        return user.id === message.user.id;
+      },
+      {id: messageID},
+      function(response) {
+        response.send(answer);
+        removeListener(messageID);
+      });
+  };
+
+  function removeListener(id) {
+    var index = bot.listeners.findIndex(function(element, index, array){
+      return id === element.options["id"];
+    });
+    bot.listeners.splice(index, 1);
+  }
 
   function getRandomIntInclusive(min, max) {
     min = Math.ceil(min);
