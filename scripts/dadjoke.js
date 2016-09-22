@@ -27,6 +27,10 @@ module.exports = function(bot) {
     "He was a good conductor."
   ];
 
+  // Instantiate a listener for "dad joke"
+  // Pick a random joke and send it
+  // Stop first listener
+  // Return answer based on jokeAnswer function
   bot.hear(/dad\s?joke/i, function(res) {
     var rand = getRandomIntInclusive(1, jokes.length - 1);
     res.send(jokes[rand]);
@@ -34,9 +38,15 @@ module.exports = function(bot) {
     jokeAnswer(res.envelope.user, answers[rand], res.message.id);
   });
 
+  // Instantiate second listener after telling a joke.
+  // Ensure bot id is the same as the user's message id
+  // If so (truthy), callback: Send answer to joke.
+  // Remove listener from bot.listeners array.
   function jokeAnswer(user, answer, messageID) {
     bot.listen(
       function(message) {
+        // console.log(user);
+        // console.log(message);
         return user.id === message.user.id;
       },
       {id: messageID},
