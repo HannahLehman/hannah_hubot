@@ -1,4 +1,5 @@
 module.exports = function(bot) {
+  // Array of jokes.
   var jokes = [
     "Why can't you hear a pterodactyl go to the bathroom?",
     "How do you cook toilet paper?",
@@ -13,6 +14,7 @@ module.exports = function(bot) {
     "How come a man driving a train got struck by lightning?"
   ];
 
+  // Array of answers.
   var answers = [
     "The \"p\" is silent.",
     "It's easy, you just brown it and then you throw it in the pot.",
@@ -27,10 +29,10 @@ module.exports = function(bot) {
     "He was a good conductor."
   ];
 
-  // Instantiate a listener for "dad joke"
-  // Pick a random joke and send it
-  // Stop first listener
-  // Return answer based on jokeAnswer function
+  // Instantiate a listener for "dad joke."
+  // Pick a random joke and send it.
+  // Stop first listener.
+  // Return answer based on jokeAnswer function.
   bot.hear(/dad\s?joke/i, function(res) {
     var rand = getRandomIntInclusive(1, jokes.length - 1);
     res.send(jokes[rand]);
@@ -39,14 +41,12 @@ module.exports = function(bot) {
   });
 
   // Instantiate second listener after telling a joke.
-  // Ensure bot id is the same as the user's message id
-  // If so (truthy), callback: Send answer to joke.
-  // Remove listener from bot.listeners array.
+  // Ensure bot id is the same as the user's message id.
+  // If so (truthy), callback: send answer.
+  // Remove listener from bot.listeners array so bot doesn't respond to itself.
   function jokeAnswer(user, answer, messageID) {
     bot.listen(
       function(message) {
-        // console.log(user);
-        // console.log(message);
         return user.id === message.user.id;
       },
       {id: messageID},
@@ -54,8 +54,10 @@ module.exports = function(bot) {
         response.send(answer);
         removeListener(messageID);
       });
-  };
+  }
 
+  // Set a unique index on the bot listeners.
+  // Remove listener that contains that id.
   function removeListener(id) {
     var index = bot.listeners.findIndex(function(element, index, array){
       return id === element.options["id"];
@@ -63,6 +65,7 @@ module.exports = function(bot) {
     bot.listeners.splice(index, 1);
   }
 
+  // Get a random integer that will be used to find a random joke.
   function getRandomIntInclusive(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
